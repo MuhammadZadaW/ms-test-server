@@ -1,13 +1,12 @@
 # GENERATE GO BINARY
-FROM golang:1.23.2-alpine3.20 as builder
+FROM golang:latest-alpine as builder
 
 # Copy the code from the host and compile it
-WORKDIR $GOPATH/src/ms-test-server
-COPY . ./
-RUN go generate /ms-test-server
+WORKDIR /app
+COPY . .
+RUN go generate ./...
 RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix nocgo -o /ms-test-server
-RUN apk update && apk add --no-cache git
 # RUNNING GO BINARY
 # Running go binary from compiler on the machine
 FROM alpine:latest
@@ -20,7 +19,6 @@ RUN cp /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 
 # copy env from the host & copy go binary from the compiler
 
-COPY --from=builder /ms-test-server ./
-COPY . .
+COPY --from=builder /ms-test-server /ms-test-server
 
 ENTRYPOINT ["/ms-test-server"]
