@@ -1,5 +1,5 @@
 # GENERATE GO BINARY
-FROM golang:latest-alpine as builder
+FROM golang:1.23.4-alpine as builder
 
 # Copy the code from the host and compile it
 WORKDIR /app
